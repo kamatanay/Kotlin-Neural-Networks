@@ -6,7 +6,7 @@ import org.junit.Test
 class EitherMonadType {
     @Test
     fun itShouldRunTheFlatMapOperationIfValueIsOfTypeRight(){
-        val rightValue = Either.Right<Int>(10)
+        val rightValue = Either.Right(10)
         val flatMappedResult = rightValue.flatMap {
             Either.Right(true)
         }
@@ -24,7 +24,7 @@ class EitherMonadType {
 
     @Test
     fun itShouldRunTheMapOperationIfValueIsOfTypeRight(){
-        val rightValue = Either.Right<Int>(10)
+        val rightValue = Either.Right(10)
         val flatMappedResult = rightValue.map {
             true
         }
@@ -42,7 +42,7 @@ class EitherMonadType {
 
     @Test
     fun takeShouldReturnTheListOfValuesIfTheTypeIsRight(){
-        val rightValue = Either.Right<Int>(10)
+        val rightValue = Either.Right(10)
         val take5 = rightValue.take(5)
         Assert.assertEquals(Either.Right(listOf(10,10,10,10,10)), take5)
     }

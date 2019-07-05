@@ -1,9 +1,7 @@
 package com.anaykamat.examples.kotlin.neuralnetworks
 
 class ForEither private constructor(){
-    companion object {
-
-    }
+    companion object
 }
 
 fun <A,B> Kind<Kind<ForEither,A>,B>.fix():Either<A,B> = this as Either<A,B>
@@ -29,8 +27,13 @@ sealed class Either<out A, out B>:Kind<Kind<ForEither, A>,B>{
     }
 
     fun take(count: Int): Kind<A,List<B>> = when(this){
-        is Right -> Right((0..count - 1).map { this.data }) as Kind<A, List<B>>
+        is Right -> Right((0 until count).map { this.data }) as Kind<A, List<B>>
         is Left -> Left(this.data) as Kind<A,List<B>>
+    }
+
+    fun <I> fold(initial:I, f:(I,B) -> I):I = when(this){
+        is Right -> f(initial, this.data)
+        is Left -> initial
     }
 
 }

@@ -10,7 +10,7 @@ class IOMonadTest {
         val runUnsafe = { 2 }
         val expectedIOMonad = IO(runUnsafe)
 
-        val flatMappedValue = ForIO.monad().pure(10).fix().flatMap { value -> if (value == 10) expectedIOMonad else IO({value}) }
+        val flatMappedValue = ForIO.monad().pure(10).fix().flatMap { value -> if (value == 10) expectedIOMonad else IO {value} }
 
         val result = flatMappedValue.map {
             Assert.assertEquals(2, it)

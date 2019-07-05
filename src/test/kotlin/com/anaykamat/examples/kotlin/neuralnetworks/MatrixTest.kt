@@ -60,10 +60,10 @@ class MatrixTest {
     }
 
     @Test
-    fun chunckedShouldGiveMatrixDevidedIntoGroupsOfGivenDimensions(){
+    fun chunkedShouldGiveMatrixDividedIntoGroupsOfGivenDimensions(){
         val matrix = integerMatrixBuilder(4)(4)((1..16).toList())
 
-        val result = matrix.flatMap{ it.chuncked(2,2) }
+        val result = matrix.flatMap{ it.chunked(2,2) }
 
         val matrixBuilder2By2 = integerMatrixBuilder(2)(2)
 
@@ -82,10 +82,10 @@ class MatrixTest {
     }
 
     @Test
-    fun chunckedShouldGiveErrorIfMatrixCannotBeDividedIntoRequiredChunks(){
+    fun chunkedShouldGiveErrorIfMatrixCannotBeDividedIntoRequiredChunks(){
         val matrix = integerMatrixBuilder(4)(4)((1..16).toList())
 
-        val result = matrix.flatMap{ it.chuncked(3,2) }
+        val result = matrix.flatMap{ it.chunked(3,2) }
 
 
         Assert.assertEquals(Either.Left(MatrixError.IncompatibleMatrixDimensions), result)

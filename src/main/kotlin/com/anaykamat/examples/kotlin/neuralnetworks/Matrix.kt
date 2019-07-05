@@ -44,7 +44,7 @@ data class Matrix<T> private constructor(val addFunction:(T, T) -> T,
 
         return when(listOf(rows, columns) == listOf(otherMatrix.rows, otherMatrix.columns)){
             true -> this.items
-                        .zip(otherMatrix.items,{x,y -> multiplicationFunction(x,y)})
+                        .zip(otherMatrix.items) { x, y -> multiplicationFunction(x,y)}
                         .reduceRight(addFunction)
                         .let {
                             this.copy(items = listOf(it), rows = 1, columns = 1)
@@ -59,17 +59,17 @@ data class Matrix<T> private constructor(val addFunction:(T, T) -> T,
 
     fun multiply(other:Matrix<T>):Either<MatrixError, Matrix<T>>{
         return when(columns == other.rows){
-            true -> this.chuncked(1, columns).flatMap { rowVectors ->
-                        other.chuncked(columns, 1).flatMap { columnVectors ->
-                            rowVectors.fold(Either.Right(emptyList<Matrix<T>>()) as Either<MatrixError, List<Matrix<T>>>,{ finalList, rowMatrix ->
+            true -> this.chunked(1, columns).flatMap { rowVectors ->
+                        other.chunked(columns, 1).flatMap { columnVectors ->
+                            rowVectors.fold(Either.Right(emptyList<Matrix<T>>()) as Either<MatrixError, List<Matrix<T>>>) { finalList, rowMatrix ->
 
-                                columnVectors.fold(Either.Right(emptyList<Matrix<T>>()) as Either<MatrixError, List<Matrix<T>>>,{ rowList, columnMatrix ->
+                                columnVectors.fold(Either.Right(emptyList<Matrix<T>>()) as Either<MatrixError, List<Matrix<T>>>) { rowList, columnMatrix ->
                                     rowMatrix.dot(columnMatrix.transpose()).flatMap { value -> rowList.map { it + listOf(value) } }
-                                }).flatMap { rowList ->
+                                }.flatMap { rowList ->
                                     finalList.map { it + rowList }
                                 }
 
-                            })
+                            }
                         }
                     }
             else -> Either.Left(MatrixError.IncompatibleMatrixDimensions)
@@ -78,7 +78,7 @@ data class Matrix<T> private constructor(val addFunction:(T, T) -> T,
         }
     }
 
-    fun chuncked(rowCount:Int, columnCount:Int):Either<MatrixError, List<Matrix<T>>>{
+    fun chunked(rowCount:Int, columnCount:Int):Either<MatrixError, List<Matrix<T>>>{
         return when(rows % rowCount == 0 && columns % columnCount == 0){
             true -> splitIntoChunks(columnCount, rowCount, items, columns).map {
                             this.copy(items = it, rows = rowCount, columns = columnCount)
@@ -99,12 +99,10 @@ data class Matrix<T> private constructor(val addFunction:(T, T) -> T,
             .map { splitIntoRows(it, columnCount) }
             .chunked(rowCount)
             .map {
-                it.foldRight((0..(originalColumnCount/columnCount) - 1).map { emptyList<T>() }, { columns, final ->
+                it.foldRight((0 until (originalColumnCount/columnCount)).map { emptyList<T>() }) { columns, final ->
                     final.zip(columns, { column, value -> value + column })
-                })
-            }.flatMap {
-                it
-            }
+                }
+            }.flatten()
     }
 
     private fun splitIntoRows(
@@ -113,7 +111,9 @@ data class Matrix<T> private constructor(val addFunction:(T, T) -> T,
     ) = inputs
         .chunked(columns)
 
-    private fun apply(f:(T,T) -> T, other:Matrix<T>):Matrix<T> = items.zip(other.items,{x,y -> f(x,y)}).let { this.copy(items = it) }
+    fun apply(f:(T,T) -> T, other:Matrix<T>):Matrix<T> = items.zip(other.items) { x, y -> f(x,y)}.let { this.copy(items = it) }
+
+    fun map(f:(T) -> T):Matrix<T> = items.map(f).let { this.copy(items = it) }
 
     companion object {
 

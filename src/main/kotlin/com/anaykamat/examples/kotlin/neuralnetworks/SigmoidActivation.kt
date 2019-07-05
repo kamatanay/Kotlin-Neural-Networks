@@ -7,7 +7,7 @@ class ForSigmoid private constructor() {
     }
 }
 
-class SigmoidActivation():Activation<Double> {
+class SigmoidActivation:Activation<Double> {
     override fun activationFor(value: Double): Double = 1 / (1+Math.exp(-value))
 
     override fun gradientOf(value: Double): Double = value * (1 - value)
