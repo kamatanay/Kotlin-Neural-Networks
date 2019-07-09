@@ -38,7 +38,7 @@ sealed class Either<out A, out B>:Kind<Kind<ForEither, A>,B>{
 
 }
 
-fun <A,B,C> Either<A,B>.flatMap(f:(B) -> Either<A,C>):Either<A,C> = when(this){
+infix fun <A,B,C> Either<A,B>.flatMap(f:(B) -> Either<A,C>):Either<A,C> = when(this){
     is Either.Right -> f(this.data)
     is Either.Left -> this
 }
