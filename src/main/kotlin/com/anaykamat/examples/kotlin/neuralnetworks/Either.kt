@@ -1,5 +1,7 @@
 package com.anaykamat.examples.kotlin.neuralnetworks
 
+import com.anaykamat.examples.kotlin.neuralnetworks.flatMap as flatMapForEither
+
 class ForEither private constructor(){
     companion object
 }
@@ -12,7 +14,7 @@ fun <L> ForEither.Companion.monad():Monad<Kind<ForEither,L>> = object:Monad<Kind
 
     override fun <A, B> Kind<Kind<ForEither, L>, A>.map(f: (A) -> B): Kind<Kind<ForEither, L>, B> = this.fix().map(f)
 
-    override fun <A, B> Kind<Kind<ForEither, L>, A>.flatMap(f: (A) -> Kind<Kind<ForEither, L>, B>): Kind<Kind<ForEither, L>, B> = this.fix().flatMap(f)
+    override fun <A, B> Kind<Kind<ForEither, L>, A>.flatMap(f: (A) -> Kind<Kind<ForEither, L>, B>): Kind<Kind<ForEither, L>, B> = this.fix().flatMapForEither(f as (A) -> Either<L,B>)
 
 }
 

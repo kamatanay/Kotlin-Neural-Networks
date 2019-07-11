@@ -12,7 +12,7 @@ fun ForIO.Companion.monad():Monad<ForIO> = object:Monad<ForIO>{
 
     override fun <A, B> Kind<ForIO, A>.map(f: (A) -> B): Kind<ForIO, B> = this.fix().map(f)
 
-    override fun <A, B> Kind<ForIO, A>.flatMap(f: (A) -> Kind<ForIO, B>): Kind<ForIO, B> = this.fix().flatMap(f)
+    override fun <A, B> Kind<ForIO, A>.flatMap(f: (A) -> Kind<ForIO, B>): IO<B> = this.fix().flatMap(f as (A) -> IO<B>)
 }
 
 class IO<A>(val runUnsafe:() -> A):Kind<ForIO,A> {

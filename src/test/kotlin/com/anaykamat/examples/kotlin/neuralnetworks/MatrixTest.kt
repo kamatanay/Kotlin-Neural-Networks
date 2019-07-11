@@ -33,13 +33,11 @@ class MatrixTest {
 
     @Test
     fun dotShouldFindTheDotProductOfItems(){
-        val firstMatrix = integerMatrixBuilder(1)(2)(listOf(1,2))
-        val secondMatrix = integerMatrixBuilder(1)(2)(listOf(3,4))
+        val result = ForEither.monad<MatrixError>().binding {
+            val firstMatrix = integerMatrixBuilder(1)(2)(listOf(1,2)).bind()
+            val secondMatrix = integerMatrixBuilder(1)(2)(listOf(3,4)).bind()
 
-        val result = firstMatrix.flatMap { firstMatrix ->
-            secondMatrix.flatMap { secondMatrix ->
-                firstMatrix.dot(secondMatrix)
-            }
+            firstMatrix.dot(secondMatrix).bind()
         }
 
         Assert.assertEquals(integerMatrixBuilder(1)(1)(listOf(11)), result)
@@ -67,15 +65,12 @@ class MatrixTest {
 
         val matrixBuilder2By2 = integerMatrixBuilder(2)(2)
 
-        val expectedValues = matrixBuilder2By2(listOf(1,2,5,6)).flatMap { matrix1 ->
-            matrixBuilder2By2(listOf(3,4,7,8)).flatMap { matrix2 ->
-                matrixBuilder2By2(listOf(9,10,13,14)).flatMap { matrix3 ->
-                    matrixBuilder2By2(listOf(11,12,15,16)).map { matrix4 ->
-                        listOf(matrix1, matrix2, matrix3, matrix4)
-                    }
-                }
-            }
-
+        val expectedValues = ForEither.monad<MatrixError>().binding {
+            val matrix1 = matrixBuilder2By2(listOf(1,2,5,6)).bind()
+            val matrix2 = matrixBuilder2By2(listOf(3,4,7,8)).bind()
+            val matrix3 = matrixBuilder2By2(listOf(9,10,13,14)).bind()
+            val matrix4 = matrixBuilder2By2(listOf(11,12,15,16)).bind()
+            listOf(matrix1, matrix2, matrix3, matrix4)
         }
 
         Assert.assertEquals(expectedValues, result)
